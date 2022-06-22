@@ -61,15 +61,39 @@ export const GithubProvider = ({ children }) => {
 		}
 	};
 
+	// get user repose
+	const getUserRepos = async (login) => {
+		setLoading();
+		const response = await fetch(`${GITHUB_URL}/users/${login}/repos`, {
+			headers: {
+				Authorization: `token ${GITHUB_TOKEN}`,
+			},
+		});
+		if (response.status === 404) {
+			dispatch({
+				type: "GET_REPOS",
+				payload: [],
+			});
+		} else {
+			const data = await response.json();
+			dispatch({
+				type: "GET_REPOS",
+				payload: data,
+			});
+		}
+	};
+
 	return (
 		<GithubContext.Provider
 			value={{
 				users: state.users,
 				loading: state.loading,
 				user: state.user,
+				repos: state.repos,
 				searchUsers,
 				clearUser,
 				getUser,
+				getUserRepos,
 			}}
 		>
 			{children}
